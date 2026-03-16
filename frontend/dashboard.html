@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTRUCK — Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     DASHBOARD SENTRUCK
+     Composants :
+       - Topbar (logo + infos utilisateur + déconnexion)
+       - Sidebar (navigation entre les sections)
+       - Contenu principal (KPIs, tableaux, modals)
+     
+     Sections du dashboard :
+       1. Vue d'ensemble (statistiques)
+       2. Camions (liste CRUD)
+       3. Trajets (liste CRUD)
+     ============================================================ -->
+
+<!-- ── LOADING OVERLAY : affiché pendant le chargement initial ── -->
+<div id="loading-overlay" class="loading-overlay">
+  <div class="loading-logo">SEN<span>TRUCK</span></div>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+  <div style="color:var(--text-dim); font-size:14px;">Chargement de votre tableau de bord…</div>
+</div>
+
+<!-- ── STRUCTURE PRINCIPALE DE L'APPLICATION ── -->
+<div class="app" id="app" style="display:none;">
+
+  <!-- ====================================================
+       TOPBAR (barre supérieure)
+       ==================================================== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <!-- Logo SENTRUCK -->
+      <div class="topbar-logo">SEN<span>TRUCK</span></div>
+      <!-- Indicateur de section active (mis à jour par JS) -->
+      <div style="color:var(--text-dim); font-size:13px;" id="topbar-section">Dashboard</div>
+    </div>
+
+    <div class="topbar-right">
+      <!-- Infos utilisateur connecté -->
+      <div class="topbar-user">
+        <!-- Avatar avec initiale du prénom -->
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div>
+          <div style="font-weight:600; color:var(--text); font-size:14px;" id="user-nom">…</div>
+          <div style="font-size:12px;" id="user-entreprise">…</div>
+        </div>
+      </div>
+      <!-- Bouton déconnexion -->
+      <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">
+        🚪 Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- ====================================================
+       SIDEBAR (navigation latérale)
+       ==================================================== -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+
+      <!-- Lien : Vue d'ensemble -->
+      <button class="nav-item active" id="nav-overview" onclick="showSection('overview')">
+        <span class="nav-icon">📊</span>
+        Vue d'ensemble
+      </button>
+
+      <!-- Lien : Camions (avec compteur) -->
+      <button class="nav-item" id="nav-trucks" onclick="showSection('trucks')">
+        <span class="nav-icon">🚛</span>
+        Mes camions
+        <span class="nav-count" id="nav-trucks-count">0</span>
+      </button>
+
+      <!-- Lien : Trajets (avec compteur) -->
+      <button class="nav-item" id="nav-trips" onclick="showSection('trips')">
+        <span class="nav-icon">🗺️</span>
+        Mes trajets
+        <span class="nav-count" id="nav-trips-count">0</span>
+      </button>
+    </div>
+
+    <!-- Infos en bas de sidebar -->
+    <div style="margin-top:auto; padding:16px 16px; border-top:1px solid var(--dark3);">
+      <div style="font-size:12px; color:var(--text-dim);">SENTRUCK MVP v1.0</div>
+      <div style="font-size:11px; color:#4a5b6e); margin-top:2px;">🇸🇳 Made in Sénégal</div>
+    </div>
+  </aside>
+
+  <!-- ====================================================
+       CONTENU PRINCIPAL
+       ==================================================== -->
+  <main class="main-content">
+
+    <!-- ================================================
+         SECTION 1 : VUE D'ENSEMBLE (STATISTIQUES)
+         ================================================ -->
+    <section id="section-overview">
+      <div class="page-header">
+        <div class="page-title">
+          Vue d'ensemble
+          <small>Résumé de votre flotte et de vos opérations</small>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" onclick="showSection('trucks'); openTruckModal()">
+            + Nouveau camion
+          </button>
+          <button class="btn btn-or" onclick="showSection('trips'); openTripModal()">
+            + Nouveau trajet
+          </button>
+        </div>
+      </div>
+
+      <!-- Cartes KPI camions -->
+      <div style="font-family:var(--font-title); font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px;">
+        🚛 FLOTTE DE CAMIONS
+      </div>
+      <div class="stats-grid" id="stats-trucks">
+        <div class="stat-card vert"><div class="stat-icon">🚛</div><div class="stat-value vert" id="stat-total-trucks">—</div><div class="stat-label">Total camions</div></div>
+        <div class="stat-card vert"><div class="stat-icon">✅</div><div class="stat-value vert" id="stat-dispo">—</div><div class="stat-label">Disponibles</div></div>
+        <div class="stat-card or"><div class="stat-icon">🛣️</div><div class="stat-value or" id="stat-en-route">—</div><div class="stat-label">En route</div></div>
+        <div class="stat-card info"><div class="stat-icon">🔧</div><div class="stat-value info" id="stat-maintenance">—</div><div class="stat-label">En maintenance</div></div>
+        <div class="stat-card danger"><div class="stat-icon">⛔</div><div class="stat-value danger" id="stat-hors-service">—</div><div class="stat-label">Hors service</div></div>
+      </div>
+
+      <!-- Cartes KPI trajets -->
+      <div style="font-family:var(--font-title); font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px; margin-top:8px;">
+        🗺️ OPÉRATIONS & FINANCE
+      </div>
+      <div class="stats-grid" id="stats-trips">
+        <div class="stat-card vert"><div class="stat-icon">🗺️</div><div class="stat-value vert" id="stat-total-trips">—</div><div class="stat-label">Total trajets</div></div>
+        <div class="stat-card or"><div class="stat-icon">🔄</div><div class="stat-value or" id="stat-en-cours">—</div><div class="stat-label">En cours</div></div>
+        <div class="stat-card vert"><div class="stat-icon">🏁</div><div class="stat-value vert" id="stat-termines">—</div><div class="stat-label">Terminés</div></div>
+        <div class="stat-card or" style="grid-column: span 2;">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value or" id="stat-ca" style="font-size:28px;">—</div>
+          <div class="stat-label">Chiffre d'affaires (trajets terminés)</div>
+        </div>
+      </div>
+
+      <!-- Raccourcis -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+        <div class="table-container" style="padding:20px; cursor:pointer;" onclick="showSection('trucks')">
+          <div style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">Gérer les camions →</div>
+          <div style="color:var(--text-dim); font-size:14px;">Ajouter, modifier ou supprimer des camions de votre flotte.</div>
+        </div>
+        <div class="table-container" style="padding:20px; cursor:pointer;" onclick="showSection('trips')">
+          <div style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">Gérer les trajets →</div>
+          <div style="color:var(--text-dim); font-size:14px;">Planifiez de nouveaux trajets, suivez les opérations en cours.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================
+         SECTION 2 : GESTION DES CAMIONS
+         ================================================ -->
+    <section id="section-trucks" class="hidden">
+      <div class="page-header">
+        <div class="page-title">
+          Mes camions
+          <small>Gérez votre flotte de véhicules</small>
+        </div>
+        <button class="btn btn-primary" onclick="openTruckModal()">
+          + Ajouter un camion
+        </button>
+      </div>
+
+      <!-- Barre de recherche + filtre statut -->
+      <div class="toolbar">
+        <input
+          type="text" id="trucks-search" class="search-input"
+          placeholder="Rechercher par nom, immatriculation, chauffeur…"
+          oninput="filterTrucks()"
+        >
+        <select id="trucks-filter-statut" class="filter-select" onchange="filterTrucks()">
+          <option value="">Tous les statuts</option>
+          <option value="disponible">✅ Disponible</option>
+          <option value="en_route">🛣️ En route</option>
+          <option value="maintenance">🔧 Maintenance</option>
+          <option value="hors_service">⛔ Hors service</option>
+        </select>
+      </div>
+
+      <!-- Tableau des camions -->
+      <div class="table-container">
+        <div class="table-head">
+          <div class="table-head-title">🚛 Flotte de camions</div>
+          <div class="table-count" id="trucks-count">0 camion(s)</div>
+        </div>
+        <div id="trucks-table-wrapper">
+          <table id="trucks-table">
+            <thead>
+              <tr>
+                <th>Camion</th>
+                <th>Immatriculation</th>
+                <th>Marque / Modèle</th>
+                <th>Capacité</th>
+                <th>Chauffeur</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trucks-tbody">
+              <!-- Rempli par JavaScript -->
+            </tbody>
+          </table>
+          <!-- Message si liste vide -->
+          <div id="trucks-empty" class="empty-state hidden">
+            <div class="empty-icon">🚛</div>
+            <div class="empty-title">Aucun camion enregistré</div>
+            <p>Ajoutez votre premier camion pour commencer.</p>
+            <button class="btn btn-primary" style="margin-top:16px;" onclick="openTruckModal()">+ Ajouter un camion</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================
+         SECTION 3 : GESTION DES TRAJETS
+         ================================================ -->
+    <section id="section-trips" class="hidden">
+      <div class="page-header">
+        <div class="page-title">
+          Mes trajets
+          <small>Suivi de toutes vos opérations de transport</small>
+        </div>
+        <button class="btn btn-or" onclick="openTripModal()">
+          + Nouveau trajet
+        </button>
+      </div>
+
+      <!-- Barre de recherche + filtre statut -->
+      <div class="toolbar">
+        <input
+          type="text" id="trips-search" class="search-input"
+          placeholder="Rechercher par départ, destination, marchandise…"
+          oninput="filterTrips()"
+        >
+        <select id="trips-filter-statut" class="filter-select" onchange="filterTrips()">
+          <option value="">Tous les statuts</option>
+          <option value="planifie">📋 Planifié</option>
+          <option value="en_cours">🔄 En cours</option>
+          <option value="termine">✅ Terminé</option>
+          <option value="annule">❌ Annulé</option>
+        </select>
+      </div>
+
+      <!-- Tableau des trajets -->
+      <div class="table-container">
+        <div class="table-head">
+          <div class="table-head-title">🗺️ Historique des trajets</div>
+          <div class="table-count" id="trips-count">0 trajet(s)</div>
+        </div>
+        <div id="trips-table-wrapper">
+          <table id="trips-table">
+            <thead>
+              <tr>
+                <th>Camion</th>
+                <th>Itinéraire</th>
+                <th>Date départ</th>
+                <th>Marchandise</th>
+                <th>Montant (FCFA)</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trips-tbody">
+              <!-- Rempli par JavaScript -->
+            </tbody>
+          </table>
+          <div id="trips-empty" class="empty-state hidden">
+            <div class="empty-icon">🗺️</div>
+            <div class="empty-title">Aucun trajet enregistré</div>
+            <p>Créez votre premier trajet.</p>
+            <button class="btn btn-or" style="margin-top:16px;" onclick="openTripModal()">+ Nouveau trajet</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /.main-content -->
+</div><!-- /.app -->
+
+<!-- ====================================================
+     MODAL : FORMULAIRE CAMION (Ajouter / Modifier)
+     ==================================================== -->
+<div class="modal-overlay hidden" id="modal-truck">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-truck-title">🚛 Nouveau camion</div>
+      <button class="modal-close" onclick="closeModal('modal-truck')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Alerte erreur dans le modal -->
+      <div id="truck-alert" class="hidden"></div>
+
+      <form id="form-truck" onsubmit="return false;">
+        <!-- Input caché pour l'ID (lors d'une modification) -->
+        <input type="hidden" id="truck-id" name="id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="truck-nom">Nom du camion *</label>
+            <input type="text" id="truck-nom" name="nom_camion" class="form-input"
+              placeholder="Ex: Dakar Express 01">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="truck-immat">Immatriculation *</label>
+            <input type="text" id="truck-immat" name="immatriculation" class="form-input"
+              placeholder="Ex: DK-4521-A" style="text-transform:uppercase;">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="truck-marque">Marque</label>
+            <input type="text" id="truck-marque" name="marque" class="form-input"
+              placeholder="Ex: Renault, Mercedes, MAN">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="truck-modele">Modèle</label>
+            <input type="text" id="truck-modele" name="modele" class="form-input"
+              placeholder="Ex: T480, Actros 1845">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="truck-capacite">Capacité (tonnes) *</label>
+            <input type="number" id="truck-capacite" name="capacite_tonnes" class="form-input"
+              placeholder="Ex: 25" min="0" step="0.5">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="truck-annee">Année de fabrication</label>
+            <input type="number" id="truck-annee" name="annee_fabrication" class="form-input"
+              placeholder="Ex: 2020" min="1990" max="2025">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="truck-statut">Statut *</label>
+          <select id="truck-statut" name="statut" class="form-select">
+            <option value="disponible">✅ Disponible</option>
+            <option value="en_route">🛣️ En route</option>
+            <option value="maintenance">🔧 En maintenance</option>
+            <option value="hors_service">⛔ Hors service</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="truck-chauffeur-nom">Nom du chauffeur</label>
+            <input type="text" id="truck-chauffeur-nom" name="chauffeur_nom" class="form-input"
+              placeholder="Ex: Ibrahima Sarr">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="truck-chauffeur-tel">Téléphone chauffeur</label>
+            <input type="tel" id="truck-chauffeur-tel" name="chauffeur_tel" class="form-input"
+              placeholder="+221 77 XXX XX XX">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-truck')">Annuler</button>
+      <button class="btn btn-primary" id="btn-save-truck" onclick="saveTruck()">
+        💾 Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================================================
+     MODAL : FORMULAIRE TRAJET (Ajouter / Modifier)
+     ==================================================== -->
+<div class="modal-overlay hidden" id="modal-trip">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-trip-title">🗺️ Nouveau trajet</div>
+      <button class="modal-close" onclick="closeModal('modal-trip')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="trip-alert" class="hidden"></div>
+
+      <form id="form-trip" onsubmit="return false;">
+        <input type="hidden" id="trip-id" name="id">
+
+        <!-- Sélection du camion -->
+        <div class="form-group">
+          <label class="form-label" for="trip-truck">Camion *</label>
+          <select id="trip-truck" name="truck_id" class="form-select">
+            <option value="">— Sélectionnez un camion —</option>
+            <!-- Rempli dynamiquement par JavaScript -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="trip-depart">Lieu de départ *</label>
+            <input type="text" id="trip-depart" name="depart" class="form-input"
+              placeholder="Ex: Dakar - Port Autonome">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="trip-destination">Destination *</label>
+            <input type="text" id="trip-destination" name="destination" class="form-input"
+              placeholder="Ex: Ziguinchor - Marché">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="trip-date-depart">Date de départ *</label>
+            <input type="datetime-local" id="trip-date-depart" name="date_depart" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="trip-date-arrivee">Date d'arrivée prévue</label>
+            <input type="datetime-local" id="trip-date-arrivee" name="date_arrivee_prevue" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="trip-distance">Distance (km)</label>
+            <input type="number" id="trip-distance" name="distance_km" class="form-input"
+              placeholder="Ex: 470" min="0" step="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="trip-poids">Poids chargé (tonnes)</label>
+            <input type="number" id="trip-poids" name="poids_charge" class="form-input"
+              placeholder="Ex: 24.5" min="0" step="0.5">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="trip-marchandise">Marchandise transportée</label>
+          <input type="text" id="trip-marchandise" name="marchandise" class="form-input"
+            placeholder="Ex: Riz 500 sacs, Ciment 20 tonnes, Légumes…">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="trip-montant">Montant (FCFA)</label>
+            <input type="number" id="trip-montant" name="montant_fcfa" class="form-input"
+              placeholder="Ex: 450000" min="0" step="500">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="trip-carburant">Frais carburant (FCFA)</label>
+            <input type="number" id="trip-carburant" name="frais_carburant" class="form-input"
+              placeholder="Ex: 95000" min="0" step="500">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="trip-statut">Statut</label>
+          <select id="trip-statut" name="statut" class="form-select">
+            <option value="planifie">📋 Planifié</option>
+            <option value="en_cours">🔄 En cours</option>
+            <option value="termine">✅ Terminé</option>
+            <option value="annule">❌ Annulé</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="trip-notes">Notes / Remarques</label>
+          <textarea id="trip-notes" name="notes" class="form-textarea"
+            placeholder="Instructions spéciales, contacts, incidents…"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-trip')">Annuler</button>
+      <button class="btn btn-or" id="btn-save-trip" onclick="saveTrip()">
+        💾 Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================================================
+     MODAL : CONFIRMATION SUPPRESSION
+     ==================================================== -->
+<div class="modal-overlay hidden" id="modal-confirm">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">⚠️ Confirmer la suppression</div>
+      <button class="modal-close" onclick="closeModal('modal-confirm')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-message" style="color:var(--text-dim); font-size:15px; line-height:1.6;">
+        Êtes-vous sûr de vouloir supprimer cet élément ?
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-confirm')">Annuler</button>
+      <button class="btn btn-danger" id="btn-confirm-delete" onclick="executeDelete()">
+        🗑️ Supprimer définitivement
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts JS -->
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

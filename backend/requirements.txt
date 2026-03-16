@@ -1,0 +1,9 @@
+# SENTRUCK - Dépendances Python
+# Installez avec : pip install -r requirements.txt
+
+flask==3.0.0            # Framework web pour créer l'API REST
+flask-cors==4.0.0       # Autorise le frontend (autre port) à appeler l'API
+psycopg2-binary==2.9.9  # Connexion Python ↔ PostgreSQL
+bcrypt==4.1.2           # Hashage sécurisé des mots de passe
+PyJWT==2.8.0            # Création et vérification des tokens JWT
+python-dotenv==1.0.0    # Lecture des variables d'environnement depuis .env

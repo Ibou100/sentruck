@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTRUCK — Connexion / Inscription</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     PAGE AUTHENTIFICATION - SENTRUCK
+     Deux onglets sur la droite :
+       - Connexion  (email + mot de passe)
+       - Inscription (nom + email + mot de passe + entreprise)
+     La partie gauche est décorative.
+     ============================================================ -->
+
+<div class="auth-page">
+
+  <!-- ── PARTIE GAUCHE : Présentation / Branding ── -->
+  <div class="auth-left">
+    <!-- Logo -->
+    <div class="logo" style="margin-bottom:40px;">
+      <div class="logo-icon">🚛</div>
+      <div class="logo-text" style="color:white;">SEN<span style="color:var(--or);">TRUCK</span></div>
+    </div>
+
+    <div class="auth-left-title">
+      Gérez votre<br>
+      <span>flotte</span><br>
+      au Sénégal
+    </div>
+    <p class="auth-left-sub">
+      La solution de transport pensée pour les routes sénégalaises,
+      de Dakar à Ziguinchor.
+    </p>
+
+    <!-- Points clés -->
+    <div class="auth-left-points">
+      <div class="auth-point">
+        <div class="auth-point-dot"></div>
+        Suivi des camions en temps réel
+      </div>
+      <div class="auth-point">
+        <div class="auth-point-dot"></div>
+        Gestion complète des trajets en FCFA
+      </div>
+      <div class="auth-point">
+        <div class="auth-point-dot"></div>
+        Tableau de bord et statistiques
+      </div>
+      <div class="auth-point">
+        <div class="auth-point-dot"></div>
+        Données 100% sécurisées
+      </div>
+    </div>
+
+    <!-- Compte de démo affiché clairement -->
+    <div style="margin-top:48px; padding:16px; background:rgba(0,0,0,0.25); border-radius:10px;">
+      <div style="font-size:12px; font-weight:700; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:8px;">COMPTE DE DÉMONSTRATION</div>
+      <div style="font-size:14px; color:white;">📧 demo@sentruck.sn</div>
+      <div style="font-size:14px; color:white; margin-top:4px;">🔑 Demo1234!</div>
+    </div>
+  </div>
+
+  <!-- ── PARTIE DROITE : Formulaires ── -->
+  <div class="auth-right">
+    <div class="auth-box">
+
+      <!-- Titre -->
+      <div class="auth-box-title">Bienvenue 👋</div>
+      <div class="auth-box-sub">Connectez-vous ou créez votre compte transporteur</div>
+
+      <!-- Onglets Connexion / Inscription -->
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-connexion" onclick="showTab('connexion')">
+          Connexion
+        </div>
+        <div class="auth-tab" id="tab-inscription" onclick="showTab('inscription')">
+          Inscription
+        </div>
+      </div>
+
+      <!-- ─────────────────────────────────────────────── -->
+      <!-- FORMULAIRE CONNEXION -->
+      <!-- ─────────────────────────────────────────────── -->
+      <div id="form-connexion">
+        <!-- Zone d'alerte (erreurs globales) -->
+        <div id="alert-connexion" class="hidden"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="connexion-email">Email</label>
+          <input
+            type="email"
+            id="connexion-email"
+            name="email"
+            class="form-input"
+            placeholder="votre@email.com"
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="connexion-mdp">Mot de passe</label>
+          <input
+            type="password"
+            id="connexion-mdp"
+            name="mot_de_passe"
+            class="form-input"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          >
+        </div>
+
+        <!-- Bouton de connexion -->
+        <button class="btn btn-primary btn-block btn-lg" id="btn-connexion" onclick="handleConnexion()">
+          🚛 Se connecter
+        </button>
+
+        <!-- Lien vers inscription -->
+        <p style="text-align:center; margin-top:20px; color:var(--text-dim); font-size:14px;">
+          Pas encore de compte ?
+          <a href="#" onclick="showTab('inscription')" style="color:var(--or);">Créer un compte</a>
+        </p>
+      </div>
+
+      <!-- ─────────────────────────────────────────────── -->
+      <!-- FORMULAIRE INSCRIPTION -->
+      <!-- ─────────────────────────────────────────────── -->
+      <div id="form-inscription" class="hidden">
+        <!-- Zone d'alerte -->
+        <div id="alert-inscription" class="hidden"></div>
+
+        <!-- Nom complet -->
+        <div class="form-group">
+          <label class="form-label" for="inscription-nom">Nom complet *</label>
+          <input
+            type="text"
+            id="inscription-nom"
+            name="nom"
+            class="form-input"
+            placeholder="Ex: Mamadou Ndiaye"
+          >
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="inscription-email">Email *</label>
+          <input
+            type="email"
+            id="inscription-email"
+            name="email"
+            class="form-input"
+            placeholder="votre@email.com"
+            autocomplete="email"
+          >
+        </div>
+
+        <!-- Téléphone + Entreprise sur la même ligne -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="inscription-tel">Téléphone</label>
+            <input
+              type="tel"
+              id="inscription-tel"
+              name="telephone"
+              class="form-input"
+              placeholder="+221 77 XXX XX XX"
+            >
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inscription-entreprise">Entreprise</label>
+            <input
+              type="text"
+              id="inscription-entreprise"
+              name="entreprise"
+              class="form-input"
+              placeholder="Transport XYZ"
+            >
+          </div>
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="form-group">
+          <label class="form-label" for="inscription-mdp">Mot de passe *</label>
+          <input
+            type="password"
+            id="inscription-mdp"
+            name="mot_de_passe"
+            class="form-input"
+            placeholder="Minimum 8 caractères"
+            autocomplete="new-password"
+          >
+          <div class="form-error hidden" id="hint-mdp" style="color:var(--text-dim);">
+            💡 Au moins 8 caractères
+          </div>
+        </div>
+
+        <!-- Bouton inscription -->
+        <button class="btn btn-or btn-block btn-lg" id="btn-inscription" onclick="handleInscription()">
+          ✨ Créer mon compte
+        </button>
+
+        <p style="text-align:center; margin-top:20px; color:var(--text-dim); font-size:14px;">
+          Déjà un compte ?
+          <a href="#" onclick="showTab('connexion')" style="color:var(--vert-light);">Se connecter</a>
+        </p>
+      </div>
+
+    </div><!-- /.auth-box -->
+  </div><!-- /.auth-right -->
+
+</div><!-- /.auth-page -->
+
+<!-- ============================================================
+     Scripts JS
+     ============================================================ -->
+<script src="js/api.js"></script>
+<script>
+  // Si déjà connecté, aller au dashboard
+  Auth.redirectIfLoggedIn();
+
+  /**
+   * Affiche l'onglet demandé (connexion ou inscription)
+   * et cache l'autre.
+   */
+  function showTab(tab) {
+    // Mettre à jour les onglets (style actif / inactif)
+    document.getElementById("tab-connexion").classList.toggle("active", tab === "connexion");
+    document.getElementById("tab-inscription").classList.toggle("active", tab === "inscription");
+
+    // Afficher / cacher les formulaires
+    document.getElementById("form-connexion").classList.toggle("hidden", tab !== "connexion");
+    document.getElementById("form-inscription").classList.toggle("hidden", tab !== "inscription");
+  }
+
+  /**
+   * Affiche un message d'alerte dans le formulaire.
+   * @param {string} formType - "connexion" ou "inscription"
+   * @param {string} msg      - Le message à afficher
+   * @param {string} type     - "error" ou "success"
+   */
+  function showAlert(formType, msg, type = "error") {
+    const el = document.getElementById(`alert-${formType}`);
+    el.className = `alert alert-${type}`;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function hideAlert(formType) {
+    document.getElementById(`alert-${formType}`).classList.add("hidden");
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // GESTION CONNEXION
+  // ─────────────────────────────────────────────────────────────
+  async function handleConnexion() {
+    hideAlert("connexion");
+
+    // Récupérer les valeurs des champs
+    const email = document.getElementById("connexion-email").value.trim();
+    const mdp   = document.getElementById("connexion-mdp").value;
+
+    // ── Validation côté frontend (avant d'appeler le serveur) ──
+    if (!email) {
+      showAlert("connexion", "Veuillez saisir votre email.");
+      document.getElementById("connexion-email").focus();
+      return;
+    }
+    if (!mdp) {
+      showAlert("connexion", "Veuillez saisir votre mot de passe.");
+      document.getElementById("connexion-mdp").focus();
+      return;
+    }
+
+    // Désactiver le bouton et afficher le spinner
+    const btn = document.getElementById("btn-connexion");
+    setLoading(btn, true);
+
+    // ── Appel API ──
+    // On envoie un POST /api/auth/connexion avec email et mot_de_passe
+    const { ok, data } = await apiCall("/auth/connexion", "POST", {
+      email,
+      mot_de_passe: mdp
+    }, false); // false = pas de token JWT pour la connexion (on n'est pas encore authentifié)
+
+    setLoading(btn, false);
+
+    if (ok) {
+      // Succès : sauvegarder le token et rediriger
+      Auth.save(data.token, data.utilisateur);
+      showToast(data.message, "success");
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 800);
+    } else {
+      // Erreur : afficher le message retourné par le serveur
+      showAlert("connexion", data.erreur || "Erreur de connexion.");
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // GESTION INSCRIPTION
+  // ─────────────────────────────────────────────────────────────
+  async function handleInscription() {
+    hideAlert("inscription");
+
+    const nom        = document.getElementById("inscription-nom").value.trim();
+    const email      = document.getElementById("inscription-email").value.trim();
+    const telephone  = document.getElementById("inscription-tel").value.trim();
+    const entreprise = document.getElementById("inscription-entreprise").value.trim();
+    const mdp        = document.getElementById("inscription-mdp").value;
+
+    // ── Validations frontend ──
+    if (!nom) {
+      showAlert("inscription", "Votre nom complet est obligatoire.");
+      document.getElementById("inscription-nom").focus();
+      return;
+    }
+    if (!email || !email.includes("@")) {
+      showAlert("inscription", "Veuillez saisir un email valide.");
+      document.getElementById("inscription-email").focus();
+      return;
+    }
+    if (!mdp || mdp.length < 8) {
+      showAlert("inscription", "Le mot de passe doit contenir au moins 8 caractères.");
+      document.getElementById("inscription-mdp").focus();
+      return;
+    }
+
+    const btn = document.getElementById("btn-inscription");
+    setLoading(btn, true);
+
+    // ── Appel API ──
+    const { ok, data } = await apiCall("/auth/inscription", "POST", {
+      nom, email, mot_de_passe: mdp, telephone, entreprise
+    }, false);
+
+    setLoading(btn, false);
+
+    if (ok) {
+      Auth.save(data.token, data.utilisateur);
+      showToast(data.message, "success");
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 900);
+    } else {
+      showAlert("inscription", data.erreur || "Erreur lors de l'inscription.");
+    }
+  }
+
+  // Permettre la connexion avec la touche Entrée
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const isConnexion = !document.getElementById("form-connexion").classList.contains("hidden");
+      isConnexion ? handleConnexion() : handleInscription();
+    }
+  });
+
+  // Afficher le hint mot de passe en temps réel
+  const mdpInput = document.getElementById("inscription-mdp");
+  if (mdpInput) {
+    mdpInput.addEventListener("input", () => {
+      const hint = document.getElementById("hint-mdp");
+      hint.classList.remove("hidden");
+      if (mdpInput.value.length >= 8) {
+        hint.textContent = "✅ Mot de passe valide";
+        hint.style.color = "var(--success)";
+      } else {
+        hint.textContent = `⚠ Encore ${8 - mdpInput.value.length} caractère(s) minimum`;
+        hint.style.color = "var(--warning)";
+      }
+    });
+  }
+</script>
+</body>
+</html>

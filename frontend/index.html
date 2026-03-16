@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTRUCK — Gestion de flotte au Sénégal</title>
+  <!-- Icône navigateur (emoji camion) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     PAGE D'ACCUEIL - SENTRUCK
+     Structure :
+       1. Navigation
+       2. Bandeau couleurs sénégal
+       3. Hero (titre + CTA)
+       4. Section features (fonctionnalités)
+       5. Footer
+     ============================================================ -->
+
+<div class="landing">
+
+  <!-- ── 1. NAVIGATION ── -->
+  <nav class="landing-nav">
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">🚛</div>
+      <div class="logo-text">SEN<span>TRUCK</span></div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="landing-nav-links">
+      <a href="auth.html" class="btn btn-ghost">Se connecter</a>
+      <a href="auth.html" class="btn btn-or" id="nav-cta">
+        Commencer gratuitement →
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── 2. BANDEAU TRICOLORE SÉNÉGAL ── -->
+  <div class="sn-stripe"></div>
+
+  <!-- ── 3. HERO ── -->
+  <section class="hero">
+    <!-- Tag d'introduction -->
+    <div class="hero-tag">🇸🇳 Conçu pour les transporteurs sénégalais</div>
+
+    <!-- Titre principal -->
+    <h1>
+      Gérez votre flotte<br>
+      <span class="accent">sans complexité</span>
+    </h1>
+
+    <!-- Sous-titre -->
+    <p class="hero-sub">
+      SENTRUCK est la plateforme tout-en-un pour les entreprises de transport
+      au Sénégal. Suivez vos camions, gérez vos trajets Dakar–Ziguinchor,
+      et pilotez votre business en temps réel.
+    </p>
+
+    <!-- Boutons d'action -->
+    <div class="hero-actions">
+      <a href="auth.html" class="btn btn-primary btn-lg">
+        🚀 Démarrer maintenant
+      </a>
+      <a href="#features" class="btn btn-ghost btn-lg">
+        Voir les fonctionnalités
+      </a>
+    </div>
+
+    <!-- Statistiques rapides -->
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-number">100%</div>
+        <div class="hero-stat-label">En ligne</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number">FCFA</div>
+        <div class="hero-stat-label">Monnaie locale</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number">∞</div>
+        <div class="hero-stat-label">Camions gérés</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number">🔒</div>
+        <div class="hero-stat-label">Données sécurisées</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. SECTION FONCTIONNALITÉS ── -->
+  <section class="features" id="features">
+    <div style="max-width:1100px; margin:0 auto;">
+
+      <!-- Titre section -->
+      <div class="center">
+        <div class="hero-tag" style="display:inline-flex;">✨ Fonctionnalités</div>
+        <h2 style="font-family:var(--font-title); font-size:clamp(32px,5vw,52px); font-weight:800; margin-top:12px;">
+          Tout ce dont vous avez besoin
+        </h2>
+        <p style="color:var(--text-dim); margin-top:8px; font-size:17px;">
+          Pensé pour la réalité du terrain sénégalais
+        </p>
+      </div>
+
+      <!-- Grille de 3 features principales -->
+      <div class="features-grid" style="margin-top:48px;">
+
+        <div class="feature-card">
+          <div class="feature-icon">🚛</div>
+          <div class="feature-title">Gestion de flotte</div>
+          <div class="feature-desc">
+            Enregistrez vos camions avec leur immatriculation sénégalaise
+            (DK, ZG, KF, SL…), marque, capacité et le nom de chaque chauffeur.
+            Statuts en temps réel : disponible, en route, maintenance.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🗺️</div>
+          <div class="feature-title">Suivi des trajets</div>
+          <div class="feature-desc">
+            Planifiez et suivez chaque trajet : Dakar–Tambacounda,
+            Ziguinchor–Saint-Louis… Saisissez la marchandise, le poids,
+            le montant en FCFA et les frais de carburant.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Tableau de bord</div>
+          <div class="feature-desc">
+            Visualisez d'un coup d'œil : nombre de camions actifs,
+            chiffre d'affaires total, trajets en cours et historique complet
+            de vos opérations de transport.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <div class="feature-title">Sécurité & Comptes</div>
+          <div class="feature-desc">
+            Chaque gestionnaire a son propre espace sécurisé.
+            Mots de passe chiffrés (bcrypt), authentification par token JWT.
+            Vos données restent confidentielles.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Mobile & Desktop</div>
+          <div class="feature-desc">
+            Interface responsive qui fonctionne sur téléphone Android
+            (même bas de gamme), tablette ou ordinateur. Accessible partout,
+            même depuis Tambacounda ou Kolda.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <div class="feature-title">Finances en FCFA</div>
+          <div class="feature-desc">
+            Tout est en Franc CFA : tarifs des trajets, frais de carburant,
+            valeur de la flotte. Calculez votre rentabilité sans convertir
+            dans d'autres monnaies.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA au bas -->
+      <div class="center" style="margin-top:60px;">
+        <a href="auth.html" class="btn btn-primary btn-lg">
+          Créer mon compte SENTRUCK 🚛
+        </a>
+        <p style="color:var(--text-dim); margin-top:16px; font-size:14px;">
+          Compte de démonstration disponible : <strong style="color:var(--or);">demo@sentruck.sn</strong>
+          / <strong style="color:var(--or);">Demo1234!</strong>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 5. FOOTER ── -->
+  <div class="sn-stripe"></div>
+  <footer class="landing-footer">
+    <p>
+      🚛 <strong>SENTRUCK</strong> — Plateforme de gestion de flotte &nbsp;|&nbsp;
+      Fait au 🇸🇳 Sénégal &nbsp;|&nbsp;
+      <a href="auth.html">Connexion</a>
+    </p>
+    <p style="margin-top:6px; font-size:11px; color:#4a5b6e;">
+      MVP v1.0 — Développé avec Flask + PostgreSQL
+    </p>
+  </footer>
+
+</div><!-- /.landing -->
+
+<script src="js/api.js"></script>
+<script>
+  // Si déjà connecté → aller directement au dashboard
+  Auth.redirectIfLoggedIn();
+</script>
+</body>
+</html>
